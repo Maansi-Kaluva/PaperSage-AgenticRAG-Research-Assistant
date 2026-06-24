@@ -1,0 +1,40 @@
+# Virtual environments
+papersage_venv/
+papeer_venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment variables
+.env
+
+# Databases
+*.db
+*.db-shm
+*.db-wal
+
+# Embedding cache
+embedding_cache/
+
+# DeepEval runtime artifacts
+.deepeval/
+.latest_full_run.json
+.latest_test_run.json
+.temp_test_run_data.json
+.temp-deepeval-cache.json
+.deepeval_cache.json
+.deepeval_telemetry.txt
+
+# OS files
+.DS_Store
+Thumbs.db
+
+.streamlit/secrets.toml
+
+.vscode/
+.idea/
+
+sessions.json{}
