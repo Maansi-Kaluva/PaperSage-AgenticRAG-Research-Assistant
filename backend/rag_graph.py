@@ -146,6 +146,8 @@ RETRIEVE_SYSTEM = (
     "- Questions about current events, recent developments, or supplementary information → use web_search\n"
     "- Call only one tool per turn.\n\n"
     "Do NOT produce a final answer. Only call tools to collect context."
+    "IMPORTANT: Do NOT ask clarifying questions. Do NOT produce any text response. "
+    "Only call tools. If you have enough context, stop calling tools and return nothing.\n"
 )
 
 # RELEVANCY_CHECK
@@ -180,15 +182,28 @@ def agent_node(state: RAGState) -> dict:   # Node function that receives the cur
     # retrieval llm --> tool call --> tool result
     # llm --> no tools are bounded --> tool call
 
-    messages = [{
-        "role": "system", 
-        "content": RETRIEVE_SYSTEM
-        }] + state["messages"]  # We pass state["messages"] to continue the conversation from where LLM left off, instead of starting fresh every time.
-    
-    response = lm.invoke(messages)
+    messages = state["messages"]
+    clean_messages = []
+    tool_call_ids_with_responses = {
+        msg.tool_call_id
+        for msg in messages
+        if hasattr(msg, "tool_call_id")  # ToolMessages
+    }
+    for msg in messages:
+        if hasattr(msg, "tool_calls") and msg.tool_calls:
+            # Only keep if all tool_calls have responses
+            if all(tc["id"] in tool_call_ids_with_responses for tc in msg.tool_calls):
+                clean_messages.append(msg)
+            # else: drop the orphaned AIMessage with tool_calls
+        else:
+            clean_messages.append(msg)
+
+    recent_messages = clean_messages[-6:]  # also apply the history cap
+    messages_to_send = [{"role": "system", "content": RETRIEVE_SYSTEM}] + recent_messages
+
+    response = lm.invoke(messages_to_send)
 
     updates: dict = {"messages": [response]}
-
     if getattr(response, "tool_calls", None):
         updates["retrieval_attempts"] = current_attempts + 1
     return updates

@@ -14,7 +14,8 @@ COPY documents/ documents/
 
 # Streamlit config
 RUN mkdir -p .streamlit
-COPY config.toml .streamlit/config.toml
+COPY .streamlit/config.toml .streamlit/config.toml
+COPY .streamlit/secrets.toml .streamlit/secrets.toml
 
 # Application files
 COPY app.py .
@@ -22,6 +23,7 @@ COPY evaluate.py .
 COPY goldens.json .
 COPY sessions.json .
 COPY deepeval_gpt.py .
+COPY login_wall.py .
 
 EXPOSE 8501
 
