@@ -6,7 +6,7 @@ PaperSage is a research-focused, agentic RAG system built for researchers and en
 
 ---
 
-## The Problem
+## THE PROBLEM
 
 Generic chatbots fail at research paper Q&A. They hallucinate answers, provide no source tracing, can't recover when retrieval fails, and have no awareness of whether a claim has already been superseded by newer literature. Most RAG tools use naive top-k vector search, which means one missed chunk silently produces a wrong answer.
 
@@ -14,20 +14,20 @@ Generic chatbots fail at research paper Q&A. They hallucinate answers, provide n
 
 ---
 
-## Key Features
+## KEY FEATURES
 
-- **Multi-format document ingestion** — load papers from local PDF, TXT, Markdown, DOCX, web URLs, or directly by arXiv ID or title; SHA-256 deduplication silently skips re-uploads.
-- **Agentic planner** — a GPT-5-mini planner routes every query to one of four actions (`retrieve`, `discover_papers`, `verify_claim`, `direct_answer`) before any retrieval cost is incurred.
-- **Hybrid retrieval with cross-encoder reranking** — dense vector search (Qdrant) + BM25 re-scoring + `BAAI/bge-reranker-large` cross-encoder, warmed up at startup to eliminate first-query latency.
-- **Relevancy check + automatic query rewriting** — after retrieval, a judge LLM checks chunk relevance; on failure the query is rewritten and retried up to 2 times before falling back gracefully.
-- **Inline citations** — every grounded answer includes bracketed `[N]` inline citations mapped to the exact source paper and page number, with a formatted sources block appended.
-- **Claim verification** — checks whether a specific finding is still current by searching arXiv and the live web, returning a verdict and links to superseding papers that can be loaded directly into the session.
-- **Paper discovery** — queries the arXiv API for a topic, fetches a relevance pool, and re-sorts by recency so the latest work in fast-moving fields always surfaces first.
-- **`/btw` side channel** — off-topic questions prefixed with `/btw` bypass the RAG graph entirely, auto-routing to web search or general knowledge without polluting session history.
-- **Multi-session management** — each session gets an isolated Qdrant collection and LangGraph SQLite checkpoint thread; sessions are auto-named by Gemini 2.5 Flash Lite from the first message and persist across restarts.
-- **Three-layer guardrails** — input validation (empty / length), retrieval cap (5 chunks, 8,000-char context), and generation cap (1,024 output tokens) applied at every stage with zero extra LLM calls.
-- **DeepEval evaluation harness** — `evaluate.py` runs the full pipeline against synthesized golden QA pairs, scoring Contextual Precision, Recall, Relevancy, Answer Relevancy, Faithfulness, and a custom MRR implementation.
-- **Session analytics dashboard** — sidebar displays per-session query count, routing breakdown, and (when LangSmith is configured) average latency and total token usage.
+- **Multi-format document ingestion**: load papers from local PDF, TXT, Markdown, DOCX, web URLs, or directly by arXiv ID or title; SHA-256 deduplication silently skips re-uploads.
+- **Agentic planner**: a GPT-5-mini planner routes every query to one of four actions (`retrieve`, `discover_papers`, `verify_claim`, `direct_answer`) before any retrieval cost is incurred.
+- **Hybrid retrieval with cross-encoder reranking**: dense vector search (Qdrant) + BM25 re-scoring + `BAAI/bge-reranker-large` cross-encoder, warmed up at startup to eliminate first-query latency.
+- **Relevancy check + automatic query rewriting**: after retrieval, a judge LLM checks chunk relevance; on failure the query is rewritten and retried up to 2 times before falling back gracefully.
+- **Inline citations**: every grounded answer includes bracketed `[N]` inline citations mapped to the exact source paper and page number, with a formatted sources block appended.
+- **Claim verification**: checks whether a specific finding is still current by searching arXiv and the live web, returning a verdict and links to superseding papers that can be loaded directly into the session.
+- **Paper discovery**: queries the arXiv API for a topic, fetches a relevance pool, and re-sorts by recency so the latest work in fast-moving fields always surfaces first.
+- **`/btw` side channel**: off-topic questions prefixed with `/btw` bypass the RAG graph entirely, auto-routing to web search or general knowledge without polluting session history.
+- **Multi-session management**: each session gets an isolated Qdrant collection and LangGraph SQLite checkpoint thread; sessions are auto-named by Gemini 2.5 Flash Lite from the first message and persist across restarts.
+- **Three-layer guardrails**: input validation (empty / length), retrieval cap (5 chunks, 8,000-char context), and generation cap (1,024 output tokens) applied at every stage with zero extra LLM calls.
+- **DeepEval evaluation harness**: `evaluate.py` runs the full pipeline against synthesized golden QA pairs, scoring Contextual Precision, Recall, Relevancy, Answer Relevancy, Faithfulness, and a custom MRR implementation.
+- **Session analytics dashboard**: sidebar displays per-session query count, routing breakdown, and (when LangSmith is configured) average latency and total token usage.
 
 ---
 
@@ -72,7 +72,7 @@ User Query
           └───────────────┘
 ```
 
-### Hybrid Retrieval Pipeline (inside Agent Node)
+### HYBRID RETRIEVAL PIPELINE (INSIDE AGENT NODE)
 
 ```
 Query
@@ -95,13 +95,13 @@ Query
 ```
 PAPERSAGE/
 │
-├── app.py                      # Streamlit entrypoint — UI, session management, chat loop
+├── app.py                      # Streamlit entrypoint - UI, session management, chat loop
 ├── login_wall.py               # Password-gated login screen
 │
 ├── backend/
 │   ├── __init__.py
-│   ├── rag_graph.py            # LangGraph graph definition — all nodes, edges, state
-│   ├── planner_agent.py        # Planner agent — routing prompt + structured output chain
+│   ├── rag_graph.py            # LangGraph graph definition - all nodes, edges, state
+│   ├── planner_agent.py        # Planner agent - routing prompt + structured output chain
 │   ├── hybrid_retriever.py     # Vector + BM25 + cross-encoder reranking pipeline
 │   ├── vector_store.py         # Qdrant client, collection management, add/search/dedup
 │   ├── reranker.py             # BAAI/bge-reranker-large cross-encoder (warmed up at init)
@@ -110,7 +110,7 @@ PAPERSAGE/
 │   ├── btw_handler.py          # Off-topic side channel with Tavily web search fallback
 │   ├── guardrails.py           # Input / retrieval / generation guardrails (single source of truth)
 │   ├── models.py               # Pydantic models for all structured LLM outputs
-│   └── dashboard.py            # Session analytics — local stats + LangSmith integration
+│   └── dashboard.py            # Session analytics - local stats + LangSmith integration
 │
 ├── evaluate.py                 # Full RAG evaluation harness (DeepEval + MRR)
 ├── deepeval_gpt.py             # DeepEval-compatible GPT-5-mini judge wrapper
@@ -136,7 +136,7 @@ PAPERSAGE/
 
 ---
 
-## Tech Stack
+## TECH STACK
 
 | Layer | Technology |
 |---|---|
@@ -157,7 +157,7 @@ PAPERSAGE/
 
 ---
 
-## Setup and Installation
+## SETUP AND INSTALLATION
 
 ### Prerequisites
 
@@ -167,7 +167,7 @@ PAPERSAGE/
 - OpenAI API key
 - Tavily API key
 - Google API key (Gemini, for session auto-naming)
-- LangSmith API key (optional — for dashboard analytics)
+- LangSmith API key (optional for tracing)
 
 ### 1. Clone the repository
 
@@ -228,7 +228,7 @@ Open the local URL Streamlit prints in your terminal, load a paper from the side
 
 ---
 
-## Database Schema
+## DATABASE SCHEMA
 
 Two SQLite databases are created automatically on first launch.
 
@@ -243,22 +243,10 @@ Two SQLite databases are created automatically on first launch.
 
 ---
 
-## Prerequisites
-
-- Python 3.12+
-- [uv](https://github.com/astral-sh/uv) (recommended) or pip
-- [Qdrant Cloud](https://qdrant.tech) account (free tier works)
-- OpenAI API key
-- Tavily API key
-- Google API key (Gemini, for session auto-naming)
-- LangSmith API key (optional — for dashboard analytics)
-
----
-
 ## FUTURE ENHANCEMENTS
 
 - [ ] Adaptive query routing that learns from past retrieval failures within a session
 - [ ] Exercise auto-detection of paper type (survey vs. empirical vs. theoretical) to tailor answer style
-- [ ] Personalized session memory that carries user-defined reading goals across sessions
 - [ ] Multi-paper cross-referencing to surface contradictions and consensus across a loaded corpus
+- [ ] Personalized session memory that carries user-defined reading goals across sessions
 - [ ] Export grounded answers with full citations as a formatted PDF or Markdown report
