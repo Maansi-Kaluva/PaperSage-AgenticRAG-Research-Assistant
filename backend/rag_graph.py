@@ -263,7 +263,7 @@ CLAIM_ANALYSIS_PROMPT = (
 
 verification_llm = ChatOpenAI(
     model="gpt-5.4-mini",
-    max_tokens=8000,
+    max_tokens=MAX_OUTPUT_TOKENS,
 ).with_structured_output(ClaimVerificationResult)
 
 def verify_claim_node(state: RAGState) -> dict:

@@ -84,7 +84,7 @@ def format_citations_block(citations: list) -> str:
 
 # Output token cap — set on ChatOpenAI(max_tokens=...) at LLM init time.
 # Kept here as a single source of truth so all LLM instances stay in sync.
-MAX_OUTPUT_TOKENS = 4000
+MAX_OUTPUT_TOKENS = 1024
 
 NO_ANSWER_FALLBACK = (
     "I wasn't able to generate a reliable answer for this question. "
