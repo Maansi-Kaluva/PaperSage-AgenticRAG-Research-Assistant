@@ -261,7 +261,10 @@ def create_session() -> str:   # creates a session suign a unique session id for
     return sid
 
 def load_session_chats(session_id: str) -> list[dict]:
-    config = {"configurable": {"thread_id": session_id}}
+    config = {
+        "configurable": {"thread_id": session_id},
+        "metadata": {"thread_id": session_id},
+        }
     try:
         state = graph.get_state(config)
         state_values = state.values
@@ -316,6 +319,28 @@ def switch_session(session_id: str) -> None:    # if we switch sessions in betwe
         turn_count = sum(1 for m in st.session_state.chats[session_id] if m["role"] == "assistant")
         st.session_state.turns[session_id] = turn_count  # saving and displaying turn counts
 
+def delete_session(session_id: str) -> None:
+    # Remove from metadata and save
+    st.session_state.sessions_meta.pop(session_id, None)
+    save_sessions(st.session_state.sessions_meta)
+
+    # Remove from in-memory state
+    st.session_state.chats.pop(session_id, None)
+    st.session_state.turns.pop(session_id, None)
+
+    # If deleted session was active, switch to latest remaining or create new
+    if st.session_state.active_session_id == session_id:
+        remaining = sorted(
+            st.session_state.sessions_meta.values(),
+            key=lambda s: s["created_at"],
+            reverse=True,
+        )
+        if remaining:
+            switch_session(remaining[0]["id"])
+        else:
+            new_sid = create_session()
+            st.session_state.active_session_id = new_sid
+
 graph = get_graph()
 
 # BOOTSTRAP
@@ -358,14 +383,21 @@ with st.sidebar:
         sid = session["id"]
         is_active = sid == st.session_state.active_session_id
         btn_type = "primary" if is_active else "secondary"
-        if st.button(
-            session["name"],
-            key=f"sess_{sid}",
-            use_container_width=True,
-            type=btn_type,
-        ):
-            if not is_active:
-                switch_session(sid)
+
+        col1, col2 = st.columns([5, 1])
+        with col1:
+            if st.button(
+                session["name"],
+                key=f"sess_{sid}",
+                use_container_width=True,
+                type=btn_type,
+            ):
+                if not is_active:
+                    switch_session(sid)
+                    st.rerun()
+        with col2:
+            if st.button("🗑", key=f"del_{sid}", help="Delete session"):
+                delete_session(sid)
                 st.rerun()
 
     st.divider()
