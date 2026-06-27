@@ -17,7 +17,7 @@ Generic chatbots fail at research paper Q&A. They hallucinate answers, provide n
 ## KEY FEATURES
 
 - **Multi-format document ingestion**: load papers from local PDF, TXT, Markdown, DOCX, web URLs, or directly by arXiv ID or title; SHA-256 deduplication silently skips re-uploads.
-- **Agentic planner**: a GPT-5-mini planner routes every query to one of four actions (`retrieve`, `discover_papers`, `verify_claim`, `direct_answer`) before any retrieval cost is incurred.
+- **Agentic planner**: a GPT-5.4-mini planner routes every query to one of four actions (`retrieve`, `discover_papers`, `verify_claim`, `direct_answer`) before any retrieval cost is incurred.
 - **Hybrid retrieval with cross-encoder reranking**: dense vector search (Qdrant) + BM25 re-scoring + `BAAI/bge-reranker-large` cross-encoder, warmed up at startup to eliminate first-query latency.
 - **Relevancy check + automatic query rewriting**: after retrieval, a judge LLM checks chunk relevance; on failure the query is rewritten and retried up to 2 times before falling back gracefully.
 - **Inline citations**: every grounded answer includes bracketed `[N]` inline citations mapped to the exact source paper and page number, with a formatted sources block appended.
@@ -44,8 +44,8 @@ User Query
                           │
                           ▼
               ┌───────────────────────┐
-              │    PLANNER AGENT      │  ← Routes to one of 4 actions
-              │  (GPT-5-mini + tools) │
+              │     PLANNER AGENT     │  ← Routes to one of 4 actions
+              │ (GPT-5.4-mini + tools)│
               └───┬───┬───┬───┬───────┘
                   │   │   │   │
          ┌────────┘   │   │   └────────────────┐
@@ -62,7 +62,7 @@ User Query
 ┌────────┐ ┌──────────────┐   │   GENERATE   │
 │RETRIEV-│ │  RELEVANCY   │   │   ANSWER     │ ← Final output
 │AL NODE │ │  CHECK NODE  │   │  (citations  │   with inline
-│(Hybrid │ │ (GPT-5-mini) │   │   + sources) │   citations
+│(Hybrid │ │(GPT-5.4-mini)│   │   + sources) │   citations
 │ Search)│ └──────┬───────┘   └──────────────┘
 └────────┘        │
                   │ Irrelevant?
@@ -113,7 +113,7 @@ PAPERSAGE/
 │   └── dashboard.py            # Session analytics - local stats + LangSmith integration
 │
 ├── evaluate.py                 # Full RAG evaluation harness (DeepEval + MRR)
-├── deepeval_gpt.py             # DeepEval-compatible GPT-5-mini judge wrapper
+├── deepeval_gpt.py             # DeepEval-compatible GPT-5.4-mini judge wrapper
 ├── goldens.json                # Synthesized golden QA pairs for evaluation
 ├── eval_results.json           # Last evaluation run results
 │
@@ -140,7 +140,7 @@ PAPERSAGE/
 
 | Layer | Technology |
 |---|---|
-| LLM | GPT-5-mini (OpenAI) |
+| LLM | GPT-5.4-mini (OpenAI) |
 | Session naming | Gemini 2.5 Flash Lite (Google) |
 | Orchestration | LangGraph (StateGraph with SQLite checkpointing) |
 | Vector store | Qdrant Cloud |

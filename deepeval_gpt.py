@@ -6,7 +6,7 @@ class GPTModel(DeepEvalBaseLLM):
 
     def __init__(self):
         self.model = ChatOpenAI(
-            model="gpt-5-mini",
+            model="gpt-5.4-mini",
             temperature=0,
             model_kwargs={"response_format": {"type": "json_object"}},
         )
@@ -23,4 +23,4 @@ class GPTModel(DeepEvalBaseLLM):
         return response.content
 
     def get_model_name(self):
-        return "gpt-5-mini"
+        return "gpt-5.4-mini"

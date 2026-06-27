@@ -120,7 +120,7 @@ def main() -> None:
         ContextualRecallMetric(threshold = METRIC_THRESHOLD, model = judge_model),   
         ContextualRelevancyMetric(threshold = METRIC_THRESHOLD, model = judge_model),
         AnswerRelevancyMetric(threshold = METRIC_THRESHOLD, model = judge_model),
-        FaithfulnessMetric(threshold = METRIC_THRESHOLD, model = judge_model),      # LLM-as-a-judge - gpt-5-mini 
+        FaithfulnessMetric(threshold = METRIC_THRESHOLD, model = judge_model),      # LLM-as-a-judge - gpt-5.4-mini 
     ]
 
     test_cases = []

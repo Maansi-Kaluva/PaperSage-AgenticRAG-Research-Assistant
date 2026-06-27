@@ -12,7 +12,7 @@ from backend.guardrails import MAX_OUTPUT_TOKENS
 load_dotenv()
 
 llm = ChatOpenAI(
-    model="gpt-5-mini",
+    model="gpt-5.4-mini",
     max_tokens=MAX_OUTPUT_TOKENS,  # GENERATION GUARDRAIL: cap output tokens
     )
 

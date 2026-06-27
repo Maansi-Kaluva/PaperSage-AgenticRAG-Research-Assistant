@@ -29,7 +29,7 @@ from backend.guardrails import MAX_OUTPUT_TOKENS, cap_retrieved_docs, validate_g
 load_dotenv()
 
 llm = ChatOpenAI(
-    model="gpt-5-mini",
+    model="gpt-5.4-mini",
     max_completion_tokens=2048,  # GENERATION GUARDRAIL: cap output tokens
     )
 
@@ -262,7 +262,7 @@ CLAIM_ANALYSIS_PROMPT = (
 )
 
 verification_llm = ChatOpenAI(
-    model="gpt-5-mini",
+    model="gpt-5.4-mini",
     max_tokens=8000,
 ).with_structured_output(ClaimVerificationResult)
 
