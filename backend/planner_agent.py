@@ -68,12 +68,14 @@ PLANNER_PROMPT = ChatPromptTemplate.from_messages(
             * "What are the differences..."
             * "What does the paper say..."
             * "What are the findings..."
-            
             choose retrieve.
+
             discover_papers
             - Use when the user explicitly wants new papers found, searched, discovered, or recommended.
+
             verify_claim
-            - Use when the user asks whether a specific claim is true, supported, contradicted, or outdated according to recent literature.
+            - Use when the user asks whether a specific fact/claim is true, supported, contradicted, or outdated according to recent literature.
+
             direct_answer
             - Use ONLY when the query is clearly conversational or unrelated to research content.
             - Examples:

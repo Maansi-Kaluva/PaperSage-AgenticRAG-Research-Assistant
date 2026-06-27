@@ -30,7 +30,7 @@ load_dotenv()
 
 llm = ChatOpenAI(
     model="gpt-5-mini",
-    max_tokens=MAX_OUTPUT_TOKENS,  # GENERATION GUARDRAIL: cap output tokens
+    max_completion_tokens=2048,  # GENERATION GUARDRAIL: cap output tokens
     )
 
 # RAG STATE
@@ -82,7 +82,7 @@ def retrieve_from_vectorstore(
     tool_call_id: Annotated[str, InjectedToolCallId], # automatically injected by LangGraph for the current tool call. this gives an id for every toolcall made by the agent. When the tool returns a ToolMessage, you attach the same tool_call_id so LangGraph/LLM knows which tool call that result belongs to.
 ) -> list: 
     """Search the uploaded research paper vector store for relevant passages."""
-    docs = hybrid_search(
+    docs, avg_score = hybrid_search(
         query,
         session_id,
         paper_title = paper_filter,
@@ -97,7 +97,7 @@ def retrieve_from_vectorstore(
     summary = f"Retrieved {len(docs)} chunk(s) from the vector store."
     return [
         ToolMessage(content=summary, tool_call_id=tool_call_id),
-        Command(update={"retrieved_docs": (current_docs or []) + docs}),  # Command - helps to update the state's fields from inside of any node.
+        Command(update={"retrieved_docs": (current_docs or []) + docs, "avg_rerank_score": avg_score}),  # Command - helps to update the state's fields from inside of any node.
     ]
 
 @tool(args_schema=WebSearchInput)
@@ -351,6 +351,8 @@ def verify_claim_node(state: RAGState) -> dict:
     }   # returns state's updates
 
 def generate_answer_node(state: RAGState) -> dict:
+    print(">>> ENTERED generate_answer_node <<<")
+
     if state.get("planner_action") == "discover_papers":
         papers = state.get("discovered_papers") or []
         answer = "I found these relevant papers:\n\n"
@@ -459,19 +461,20 @@ def generate_answer_node(state: RAGState) -> dict:
             )
         
     else:
-        prompt = f"""
-        Answer from your parametric knowledge.
-        Rules:
-        1. Be accurate.
-        2. If unsure, state uncertainty.
-        3. Avoid speculation.
-        4. Keep the answer concise.
-        Question: {query}"""
+        prompt = f"Answer the following question concisely and accurately: {query}"
 
         try:
+            print(">>> BEFORE LLM INVOKE <<<")
+
             response = llm.invoke([{"role": "user", "content": prompt}])
-            answer = validate_generation_output(response.content)
+
+            print(">>> AFTER LLM INVOKE <<<")
+            print("RAW DIRECT ANSWER:", repr(response.content))
+
+            answer = response.content.strip() if response.content else ""
+
         except Exception as e:
+            print("LLM EXCEPTION:", e)
             answer = f"GENERATION ERROR: {str(e)}"
 
     return {

@@ -14,7 +14,7 @@ def hybrid_search(query: str, session_id: str, paper_title: str | None = None):
         paper_title = paper_title,
     )
     if not vector_docs:
-        return []
+        return [], 0.0
 
     corpus = [
         d.page_content

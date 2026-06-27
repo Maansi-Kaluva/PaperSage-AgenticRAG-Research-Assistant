@@ -48,7 +48,7 @@ def validate_input_query(query: str) -> tuple[bool, str]:
 
 MAX_RETRIEVED_DOCS = 5          # hard cap on chunks passed to the LLM
 MAX_CONTEXT_CHARS = 8000        # ≈ 2000 tokens — keeps context "medium", avoids
-                                 # context-window overflow and lost-in-the-middle
+                                # context-window overflow and lost-in-the-middle
 
 
 def cap_retrieved_docs(docs: list) -> list:
@@ -84,7 +84,7 @@ def format_citations_block(citations: list) -> str:
 
 # Output token cap — set on ChatOpenAI(max_tokens=...) at LLM init time.
 # Kept here as a single source of truth so all LLM instances stay in sync.
-MAX_OUTPUT_TOKENS = 1024
+MAX_OUTPUT_TOKENS = 4000
 
 NO_ANSWER_FALLBACK = (
     "I wasn't able to generate a reliable answer for this question. "
