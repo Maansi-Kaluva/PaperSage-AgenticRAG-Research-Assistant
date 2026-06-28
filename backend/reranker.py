@@ -1,6 +1,6 @@
 from sentence_transformers import CrossEncoder
 
-_cross_encoder = CrossEncoder("BAAI/bge-reranker-large")
+_cross_encoder = CrossEncoder("BAAI/bge-reranker-base")
 try:
     _cross_encoder.predict(
         [("warmup", "warmup")]

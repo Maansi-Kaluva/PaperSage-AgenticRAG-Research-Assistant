@@ -18,7 +18,7 @@ Generic chatbots fail at research paper Q&A. They hallucinate answers, provide n
 
 - **Multi-format document ingestion**: load papers from local PDF, TXT, Markdown, DOCX, web URLs, or directly by arXiv ID or title; SHA-256 deduplication silently skips re-uploads.
 - **Agentic planner**: a GPT-5.4-mini planner routes every query to one of four actions (`retrieve`, `discover_papers`, `verify_claim`, `direct_answer`) before any retrieval cost is incurred.
-- **Hybrid retrieval with cross-encoder reranking**: dense vector search (Qdrant) + BM25 re-scoring + `BAAI/bge-reranker-large` cross-encoder, warmed up at startup to eliminate first-query latency.
+- **Hybrid retrieval with cross-encoder reranking**: dense vector search (Qdrant) + BM25 re-scoring + `BAAI/bge-reranker-base` cross-encoder, warmed up at startup to eliminate first-query latency.
 - **Relevancy check + automatic query rewriting**: after retrieval, a judge LLM checks chunk relevance; on failure the query is rewritten and retried up to 2 times before falling back gracefully.
 - **Inline citations**: every grounded answer includes bracketed `[N]` inline citations mapped to the exact source paper and page number, with a formatted sources block appended.
 - **Claim verification**: checks whether a specific finding is still current by searching arXiv and the live web, returning a verdict and links to superseding papers that can be loaded directly into the session.
@@ -83,7 +83,7 @@ Query
   │
   ├─── Deduplication (by content fingerprint)
   │
-  └─── Cross-Encoder Rerank (BAAI/bge-reranker-large, top-5)
+  └─── Cross-Encoder Rerank (BAAI/bge-reranker-base, top-5)
               │
               └─── Context truncation (guardrail: 8,000 chars max)
                           │
@@ -104,7 +104,7 @@ PAPERSAGE/
 │   ├── planner_agent.py        # Planner agent - routing prompt + structured output chain
 │   ├── hybrid_retriever.py     # Vector + BM25 + cross-encoder reranking pipeline
 │   ├── vector_store.py         # Qdrant client, collection management, add/search/dedup
-│   ├── reranker.py             # BAAI/bge-reranker-large cross-encoder (warmed up at init)
+│   ├── reranker.py             # BAAI/bge-reranker-base cross-encoder (warmed up at init)
 │   ├── paper_loader.py         # Loaders for PDF, TXT, Markdown, DOCX, URL, arXiv
 │   ├── paper_discovery.py      # arXiv API search + recency re-sort
 │   ├── btw_handler.py          # Off-topic side channel with Tavily web search fallback
@@ -146,7 +146,7 @@ PAPERSAGE/
 | Vector store | Qdrant Cloud |
 | Embeddings | `text-embedding-3-small` (OpenAI), cached via `CacheBackedEmbeddings` |
 | Sparse retrieval | BM25 (`rank-bm25`) |
-| Reranker | `BAAI/bge-reranker-large` (cross-encoder, `sentence-transformers`) |
+| Reranker | `BAAI/bge-reranker-base` (cross-encoder, `sentence-transformers`) |
 | Web search | Tavily |
 | arXiv | `arxiv` Python client |
 | PDF parsing | PyMuPDF |
